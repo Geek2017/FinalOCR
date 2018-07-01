@@ -27,7 +27,7 @@
 window.onload = function () {
     var pdfBase64 = localStorage.getItem('PDFbase64').replace('data:application/pdf;base64,', '')
 
-    var scale = 1.2; //Set this to whatever you want. This is basically the "zoom" factor for the PDF.
+    var scale = 1.1; //Set this to whatever you want. This is basically the "zoom" factor for the PDF.
 
     /**
      * Converts a base64 string into a Uint8Array
@@ -48,15 +48,41 @@ window.onload = function () {
 
         var pdf = PDFJS.getDocument(pdfData);
         pdf.then(renderPdf);
+       localStorage.setItem('pcount',pdf._data.pdfInfo.numPages);
     }
+    
+   
+  
+    $( "#onwards" ).click(function() {
+    var numPages = localStorage.getItem('pcount');
+        var inc=localStorage.getItem('cnum');
+        if(inc<numPages){    
+        inc++;
+        console.log(no);
+        localStorage.setItem('cnum',inc);
+        $('#rm').replaceWith(loadPdf(pdfData)); 
+        }
+    });
 
+    $( "#backwards" ).click(function() {
+        var dec=localStorage.getItem('pcount');
+        if(dec>1){
+        dec--;
+        console.log(no);
+        localStorage.setItem('cnum',dec);
+        $('#rm').replaceWith(loadPdf(pdfData)); 
+        }
+     });
+
+   
     function renderPdf(pdf) {
-        pdf.getPage(1).then(renderPage);
+        pdf.getPage(localStorage.getItem('cnum')).then(renderPage);
     }
 
     function renderPage(page) {
+     
         var viewport = page.getViewport(scale);
-        var $canvas = jQuery("<canvas></canvas>");
+        var $canvas = jQuery("<canvas id='rm'></canvas>");
 
         //Set the canvas height and width to the height and width of the viewport
         var canvas = $canvas.get(0);

@@ -23,14 +23,20 @@
 			currentPage: 1
 		};
 		$('#language').attr('disabled', 'disabled');
+			
+		$("#yes").hide();
+		$("#no").hide();
+		$("#language").hide();
+		$("#pageSelect").hide();
+		$("#ocrapi").hide();
 
-		$scope.Api=function(){
-		if ($('#ocrapi').val() == 1) {
-			$('#language').attr('disabled', 'disabled');
-		} else {
-			$('#language').removeAttr('disabled');
+		$scope.Api = function () {
+			if ($('#ocrapi').val() == 1) {
+				$('#language').attr('disabled', 'disabled');
+			} else {
+				$('#language').removeAttr('disabled');
+			}
 		}
-	    }
 
 		// if (localStorage.getItem('Login') == 1) {
 		// 	$('#sys').show();
@@ -64,7 +70,7 @@
 			selectedLang: 'eng'
 		};
 
-		
+
 
 		// scope methods
 		vm.removeBox = removeBox;
@@ -78,84 +84,88 @@
 		vm.captureBox = captureBox;
 
 		$("#thisocr").hide();
+		$("#loading").hide();
 
-		$('#up').click(function(){
-			alert('qw')
-			$("#container").trigger({
-				type: 'keypress',
-				which: 38,
-				keyCode: 38
-			});
+		$('#bward').click(function () {
+			var cnum=localStorage.getItem('cnum');
+			if(cnum>1){
+			cnum--;
+			localStorage.setItem('cnum',cnum);
+			$('#thisocr').append("<object class='thisocr' id='thisocr' type='text/html' data='./nonocr/' style='width:100%; height:100%; margin:0%;' scrolling='no'></object>");
+			$(".uploaded-img").hide();
+		}
+
 		});
-
-		$('#down').click(function(){
-			$("#container").trigger({
-				type: 'keypress',
-				which: 40,
-				keyCode: 40
-			});
+		$('#fward').click(function () {
+			var cnum=localStorage.getItem('cnum');
+			if(cnum<localStorage.getItem('pcount')){
+			cnum++;
+			localStorage.setItem('cnum',cnum);
+			$('#thisocr').append("<object class='thisocr' id='thisocr' type='text/html' data='./nonocr/' style='width:100%; height:100%; margin:0%;' scrolling='no'></object>");
+			$(".uploaded-img").hide();
+		}
 		});
-
-		var e = jQuery.Event("#left");
-		e.which = 37; 
-		$("div").trigger(e);
-
-		$('#right').click(function(){
-			$("#container").trigger({
-				type: 'keypress',
-				which: 39,
-				keyCode: 39
-			});
-		});
+		
+		$('#down').click(function () {
+			console.log($('#thisocr').get(0).scrollLeft);
+			('#thisocr').scrollLeft(100);
+	});
+	
 
 		function fileChangeHandler(event) {
 			var file = event.target.files[0];
 			vm.removeBox();
 			myFunction();
-			
-		
-	
+
+			localStorage.setItem('cnum',1);
+
 			// location.reload(localStorage.setItem('go',1));
-			
+
 			$("#field1").val('');
 			$("#field2").val('')
 			$("#field3").val('')
 			$("#field4").val('')
 			$("#field5").val('')
 			$('#pdf-controls').append("<object data='./nonocr' id='hidden' style='visibility: hidden;'></object>");
-		   
-			
-			
-			localStorage.removeItem('bolean');
-			setTimeout(function()
-			{ alert("Hello"); 
-			$("#hidden").remove();
-			
-			
 
-			if(localStorage.getItem('bolean') > 10 || localStorage.getItem('bolean') == '' ){
-			    $(".uploaded-img").hide();
-				$("#thisocr").show();
-				$("#hidden").remove();
-				alert('Yes');
-				$("#yes").hide();
-				$("#language").hide();
-				$("#ocrapi").hide();
-				$("#no").show();
+
+
+			localStorage.removeItem('bolean');
+			$("#loading").show();
+			setTimeout(function () {
 				
-			}else{
-				$("#yes").show();
-				$("#language").show();
-				$("#ocrapi").show();
-				$("#no").hide();
-				$(".uploaded-img").show();
-				imgPDF.checkImgOrPdf(file, uploadImg, uploadPdf);
-				alert('No');
-				$('#thisocr').hide();
 				$("#hidden").remove();
-			}
+
+
+
+				if (localStorage.getItem('bolean') > 10 || localStorage.getItem('bolean') == '') {
+					$('#thisocr').append("<object class='thisocr' id='thisocr' type='text/html' data='./nonocr/' style='width:100%; height:100%; margin:0%;' scrolling='no'></object>");
+					$(".uploaded-img").hide();
+					$("#thisocr").show();
+					$("#hidden").remove();
+					
+					$("#yes").hide();
+					$("#language").hide();
+					$("#ocrapi").hide();
+					$("#no").show();
+					$("#loading").hide();
+					
+					$("#pageSelect").hide();
+				} else {
+					$("#yes").show();
+					$("#language").show();
+					$("#ocrapi").show();
+					$("#no").hide();
+					$(".uploaded-img").show();
+					imgPDF.checkImgOrPdf(file, uploadImg, uploadPdf);
+				
+					$('#thisocr').hide();
+					$("#hidden").remove();
+					$("#loading").hide();
+					$("#pageSelect").show();
+				}
 			}, 3000);
-			
+
 
 
 
@@ -217,10 +227,10 @@
 			canvas.height = dh;
 			context.drawImage.apply(context, options);
 
-			localStorage.setItem('cw',canvas.width)
-			localStorage.setItem('ch',canvas.height)
+			localStorage.setItem('cw', canvas.width)
+			localStorage.setItem('ch', canvas.height)
 
-			
+
 		}
 
 		function uploadPdf() {
@@ -294,12 +304,12 @@
 			$("#container").addClass("grab");
 			$("#container").removeClass("crosshair");
 		}
-		$("#container").mousedown(function(){
+		$("#container").mousedown(function () {
 			$("#container").removeClass("grab");
 			$("#container").addClass("grabbing");
 		});
 
-		$("#container").mouseup(function(){
+		$("#container").mouseup(function () {
 			$("#container").removeClass("grabbing");
 			$("#container").addClass("grab");
 		});
@@ -314,8 +324,8 @@
 
 		$scope.resetIt = function () {
 			localStorage.setItem('zv', 1);
-				$scope.ocrselect.onPageSelect($scope.ocrselect.pdf.currentPage = $scope.ocrselect.pdf.currentPage);
-				$(".card-body").mousedown();
+			$scope.ocrselect.onPageSelect($scope.ocrselect.pdf.currentPage = $scope.ocrselect.pdf.currentPage);
+			$(".card-body").mousedown();
 		}
 
 		$scope.nextp = function () {
@@ -349,11 +359,11 @@
 
 
 
-	$scope.callme=function(){
+		$scope.callme = function () {
 			var $pdfContainer = jQuery("#pdfContainer");
 			$pdfContainer.css("height", localStorage.getItem("ch") + "px").css("width", localStorage.getItem("cw") + "px");
 			$pdfContainer.append($canvas);
-	
+
 			//The following few lines of code set up scaling on the context if we are on a HiDPI display
 			var outputScale = getOutputScale();
 			if (outputScale.scaled) {
@@ -361,19 +371,19 @@
 					(1 / outputScale.sy) + ')';
 				CustomStyle.setProp('transform', canvas, cssScale);
 				CustomStyle.setProp('transformOrigin', canvas, '0% 0%');
-	
+
 				if ($textLayerDiv.get(0)) {
 					CustomStyle.setProp('transform', $textLayerDiv.get(0), cssScale);
 					CustomStyle.setProp('transformOrigin', $textLayerDiv.get(0), '0% 0%');
 				}
 			}
-	
+
 			context._scaleX = outputScale.sx;
 			context._scaleY = outputScale.sy;
 			if (outputScale.scaled) {
 				context.scale(outputScale.sx, outputScale.sy);
 			}
-	
+
 			var canvasOffset = $canvas.offset();
 			var $textLayerDiv = jQuery("<div />")
 				.addClass("textLayer")
@@ -383,24 +393,24 @@
 					top: canvasOffset.top,
 					left: canvasOffset.left
 				});
-	
+
 			$pdfContainer.append($textLayerDiv);
-	
+
 			page.getTextContent().then(function (textContent) {
 				var textLayer = new TextLayerBuilder($textLayerDiv.get(0), 0); //The second zero is an index identifying
 				//the page. It is set to page.number - 1.
 				textLayer.setTextContent(textContent);
-	
+
 				var renderContext = {
 					canvasContext: context,
 					viewport: viewport,
 					textLayer: textLayer
 				};
-	
+
 				page.render(renderContext);
 			});
 		}
-		
+
 
 
 		function removeBox() {
@@ -440,9 +450,9 @@
 				var canvas = document.getElementById('test-area');
 				console.log(canvas.height);
 
-				if (canvas.height>200){
+				if (canvas.height > 200) {
 					alert('excceed')
-					canvas.height="100%";
+					canvas.height = "100%";
 					renderCapturedImg();
 				}
 
@@ -460,7 +470,7 @@
 
 		$("#uploadit").click(function () {
 			$("#img-input").click();
-			
+
 
 
 		});
@@ -544,7 +554,7 @@
 						"Content-Type": "application/json"
 					},
 					success: function (response) {
-					
+
 						setfocus();
 						if (typeof response.responses[0].fullTextAnnotation == "undefined") {
 							alert('API request Failed Try again');
@@ -741,30 +751,30 @@
 
 	window.downloadPDF = function () {
 
-		var filename=$('#field1').val()+"_"
-					+$('#field2').val()+"_"
-					+$('#field3').val()+"_"
-					+$('#field4').val()+"_"
-					+$('#field5').val();
+		var filename = $('#field1').val() + "_" +
+			$('#field2').val() + "_" +
+			$('#field3').val() + "_" +
+			$('#field4').val() + "_" +
+			$('#field5').val();
 
-		if($('#field1').val()=="" || 
-		   $('#field2').val()=="" || 
-		   $('#field3').val()=="" || 
-		   $('#field4').val()=="" || 
-		   $('#field5').val()==""){
-           alert('Blank Fieals not allowed!');
-		}else{
+		if ($('#field1').val() == "" ||
+			$('#field2').val() == "" ||
+			$('#field3').val() == "" ||
+			$('#field4').val() == "" ||
+			$('#field5').val() == "") {
+			alert('Blank Fieals not allowed!');
+		} else {
 
-		var dlnk = document.getElementById('saveit');
-		var a = document.getElementById("saveit");
-		a.setAttribute("download", filename);
-		dlnk.href = localStorage.getItem('PDFbase64');;
+			var dlnk = document.getElementById('saveit');
+			var a = document.getElementById("saveit");
+			a.setAttribute("download", filename);
+			dlnk.href = localStorage.getItem('PDFbase64');;
 
-		dlnk.click();
+			dlnk.click();
 
-		alert('File Succesfully Saved Check Your Downloads Folder')
+			alert('File Succesfully Saved Check Your Downloads Folder')
 
-	}
+		}
 
 
 
